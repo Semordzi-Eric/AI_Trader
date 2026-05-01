@@ -1,0 +1,117 @@
+# =============================================================================
+# AI Trader default configuration
+# =============================================================================
+# All modules read from this file. Override any value via CLI flags or by
+# pointing scripts at a different YAML.
+# =============================================================================
+
+seed: 42
+
+data:
+  source: "csv"                           # csv | synthetic | mt5
+  symbol: "EURUSD"
+  timeframe: "M15"                        # M1 / M5 / M15 / H1 / H4 / D1
+  csv_path: "artifacts/data/EURUSD_M15.csv"
+  start: "2018-01-01"
+  end: "2024-12-31"
+  # Train/val/test split is time-based, applied after loading.
+  train_end: "2022-12-31"
+  val_end: "2023-12-31"
+
+features:
+  return_horizons: [1, 3, 5, 15, 60]      # in bars
+  vol_windows: [10, 30, 90]
+  regime:
+    n_states: 3
+    enabled: true
+  window_size: 64                         # sequence length fed to models
+  normalize: "zscore_rolling"             # zscore_rolling | minmax | none
+  normalize_window: 500
+
+supervised:
+  model: "transformer"                    # transformer | lstm | mlp
+  d_model: 64
+  n_heads: 4
+  n_layers: 3
+  dropout: 0.1
+  horizon: 5                              # bars ahead to predict
+  target: "sign_return"                   # sign_return | return | volatility
+  batch_size: 256
+  epochs: 20
+  lr: 3.0e-4
+  weight_decay: 1.0e-5
+  early_stopping_patience: 5
+
+rl:
+  algorithm: "ppo"
+  total_timesteps: 200000
+  n_envs: 8
+  policy: "MlpPolicy"
+  learning_rate: 3.0e-4
+  n_steps: 1024
+  batch_size: 256
+  n_epochs: 10
+  gamma: 0.995
+  gae_lambda: 0.95
+  ent_coef: 0.01
+  clip_range: 0.2
+  # Reward shaping
+  reward:
+    pnl_weight: 1.0
+    drawdown_penalty: 0.5
+    vol_penalty: 0.1
+    turnover_penalty: 0.0005
+    holding_bonus: 0.0
+  # Action space
+  action:
+    type: "continuous"                    # continuous | discrete
+    max_position: 1.0                     # in units of contract size
+    leverage_cap: 3.0
+
+backtest:
+  initial_equity: 100000.0
+  contract_size: 100000                   # FX standard lot
+  spread_pips: 0.8
+  commission_per_lot: 7.0                 # round-turn USD
+  slippage_pips: 0.3
+  latency_bars: 1                         # signal at t executed at t+latency
+  fill_model: "next_open"                 # next_open | mid | worst
+  point_value: 0.0001                     # for FX 4-digit; 0.01 for JPY pairs
+
+risk:
+  max_position_units: 1.0
+  max_open_positions: 1
+  max_daily_loss_pct: 2.0
+  max_drawdown_pct: 15.0                  # halts trading if exceeded
+  max_consecutive_losses: 5
+  circuit_breaker_vol_mult: 5.0           # halt if realized vol > this * baseline
+  kill_switch_path: "artifacts/KILL"
+
+walk_forward:
+  train_bars: 20000
+  val_bars: 4000
+  test_bars: 4000
+  step_bars: 4000
+  min_trades_to_promote: 30
+
+meta:
+  enabled: true
+  features: ["realized_vol_30", "regime", "trend_strength", "spread_proxy"]
+  refit_every_steps: 5000
+
+drift:
+  enabled: true
+  page_hinkley_delta: 0.005
+  page_hinkley_threshold: 50.0
+  ks_p_value: 0.01
+  retrain_on_drift: true
+
+live:
+  broker: "mt5"
+  symbol: "EURUSD"
+  poll_seconds: 5
+  log_path: "artifacts/logs/live.log"
+
+logging:
+  level: "INFO"
+  json: false

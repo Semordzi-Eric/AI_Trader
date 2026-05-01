@@ -1,0 +1,105 @@
+# =============================================================================
+# AI Trader — .gitignore
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Secrets & local config
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+secrets.yaml
+secrets.yml
+*.secret
+
+# ---------------------------------------------------------------------------
+# Project artifacts (generated at runtime — never commit)
+# ---------------------------------------------------------------------------
+
+# Trained models
+artifacts/models/*.pt
+artifacts/models/*.zip
+artifacts/models/*.pkl
+artifacts/models/*.joblib
+artifacts/models/*.meta.json
+
+# Raw & generated data
+artifacts/data/*.csv
+artifacts/data/*.parquet
+artifacts/data/*.feather
+
+# Reports & equity curves
+artifacts/reports/runs/*.json
+artifacts/reports/runs/*.csv
+
+# Live runtime state
+artifacts/live_state.json
+artifacts/logs/
+artifacts/KILL
+
+# Data cache (legacy path referenced in older gitignore conversations)
+data_cache/
+
+# ---------------------------------------------------------------------------
+# Testing / coverage
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.lcov
+
+# ---------------------------------------------------------------------------
+# Jupyter
+# ---------------------------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb
+
+# ---------------------------------------------------------------------------
+# Type checking / linting
+# ---------------------------------------------------------------------------
+.mypy_cache/
+.ruff_cache/
+.pytype/
+
+# ---------------------------------------------------------------------------
+# IDEs & editors
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# OS
+# ---------------------------------------------------------------------------
+desktop.ini

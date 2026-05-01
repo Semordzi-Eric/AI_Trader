@@ -1,0 +1,33 @@
+# =============================================================================
+# Live trading configuration (MetaTrader 5)
+# =============================================================================
+# Inherits everything from default.yaml; override only what differs in live.
+# Credentials should NEVER be committed — use environment variables.
+# =============================================================================
+
+inherits: "default.yaml"
+
+live:
+  broker: "mt5"
+  symbol: "EURUSD"
+  timeframe: "M15"
+  magic_number: 240501
+  poll_seconds: 5
+  account:
+    login_env: "MT5_LOGIN"
+    password_env: "MT5_PASSWORD"
+    server_env: "MT5_SERVER"
+    path_env: "MT5_TERMINAL_PATH"          # absolute path to terminal64.exe
+  log_path: "artifacts/logs/live.log"
+  state_path: "artifacts/live_state.json"
+  model_path: "artifacts/models/best_agent.zip"
+  meta_model_path: "artifacts/models/meta.pkl"
+
+risk:
+  max_position_units: 0.5                  # 0.5 lots cap in live
+  max_open_positions: 1
+  max_daily_loss_pct: 1.5
+  max_drawdown_pct: 8.0
+  max_consecutive_losses: 4
+  circuit_breaker_vol_mult: 4.0
+  kill_switch_path: "artifacts/KILL"
