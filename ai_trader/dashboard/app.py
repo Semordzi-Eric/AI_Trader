@@ -213,7 +213,7 @@ def page_backtest() -> None:
     _metrics_grid(summary)
     st.plotly_chart(
         _equity_chart(result.equity, drawdown_series(result.equity.values)),
-        use_container_width=True,
+        width="stretch",
     )
 
     if result.trades:
@@ -232,7 +232,7 @@ def page_backtest() -> None:
                     for t in result.trades
                 ]
             )
-            st.dataframe(trades_df, use_container_width=True, height=300)
+            st.dataframe(trades_df, width="stretch", height=300)
 
     # Save run for the comparison page
     runs_dir = ROOT / "artifacts/reports/runs"
@@ -267,16 +267,34 @@ def page_compare() -> None:
     fig = go.Figure()
     for name in chosen:
         data = json.loads((runs_dir / f"{name}.json").read_text())
-        s = data["summary"]
+        s = data.get("summary", {})
         s["name"] = name
         summaries.append(s)
-        eq_df = pd.DataFrame(list(data["equity"].items()), columns=["ts", "equity"])
-        eq_df["ts"] = pd.to_datetime(eq_df["ts"])
+
+        if "equity" in data:
+            eq_df = pd.DataFrame(list(data["equity"].items()), columns=["ts", "equity"])
+            eq_df["ts"] = pd.to_datetime(eq_df["ts"])
+        elif "equity_csv" in data:
+            csv_p = ROOT / data["equity_csv"]
+            if csv_p.exists():
+                # Load from CSV (CLI format)
+                eq_df = pd.read_csv(csv_p, index_col=0)
+                eq_df.index.name = "ts"
+                eq_df = eq_df.reset_index()
+                eq_df.columns = ["ts", "equity"]
+                eq_df["ts"] = pd.to_datetime(eq_df["ts"])
+            else:
+                st.warning(f"Equity CSV not found for {name}: {csv_p}")
+                continue
+        else:
+            st.warning(f"No equity data found for {name}")
+            continue
+
         fig.add_trace(go.Scatter(x=eq_df["ts"], y=eq_df["equity"], mode="lines", name=name))
 
     fig.update_layout(template="plotly_dark", height=480, margin=dict(l=20, r=20, t=30, b=20),
                       font=dict(family="IBM Plex Mono, monospace"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     df_sum = pd.DataFrame(summaries).set_index("name")
     cols_show = [c for c in [
@@ -288,7 +306,7 @@ def page_compare() -> None:
         "sharpe": "{:.2f}", "sortino": "{:.2f}", "calmar": "{:.2f}",
         "max_drawdown_pct": "{:.2f}", "profit_factor": "{:.2f}",
         "win_rate_pct": "{:.2f}",
-    }), use_container_width=True)
+    }), width="stretch")
 
 
 # -----------------------------------------------------------------------------

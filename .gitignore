@@ -40,26 +40,10 @@ secrets.yml
 # Project artifacts (generated at runtime — never commit)
 # ---------------------------------------------------------------------------
 
-# Trained models
-artifacts/models/*.pt
-artifacts/models/*.zip
-artifacts/models/*.pkl
-artifacts/models/*.joblib
-artifacts/models/*.meta.json
-
-# Raw & generated data
-artifacts/data/*.csv
-artifacts/data/*.parquet
-artifacts/data/*.feather
-
-# Reports & equity curves
-artifacts/reports/runs/*.json
-artifacts/reports/runs/*.csv
-
-# Live runtime state
-artifacts/live_state.json
-artifacts/logs/
-artifacts/KILL
+# All runtime artifacts (models, data, reports, logs)
+artifacts/**
+!artifacts/
+!artifacts/.gitkeep
 
 # Data cache (legacy path referenced in older gitignore conversations)
 data_cache/

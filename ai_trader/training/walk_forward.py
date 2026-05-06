@@ -87,7 +87,7 @@ def walk_forward_run(
         # Slice to train segment for env
         train_mask = out.prices.index <= split.train.index[-1]
         train_prices = out.prices.loc[train_mask]
-        train_features = out.feature_array[train_mask.values]
+        train_features = out.feature_array[train_mask]
 
         env_cfg = EnvConfig(
             window_size=feat_cfg["window_size"],
@@ -128,7 +128,7 @@ def walk_forward_run(
         # We pull the test slice of the prepared output.
         test_mask = out.prices.index > split.val.index[-1]
         test_prices = out.prices.loc[test_mask]
-        test_features = out.feature_array[test_mask.values]
+        test_features = out.feature_array[test_mask]
 
         if len(test_features) <= feat_cfg["window_size"] + 2:
             logger.warning("test fold too small after warmup, skipping fold %d", fold_id)

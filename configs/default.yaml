@@ -23,7 +23,7 @@ features:
   vol_windows: [10, 30, 90]
   regime:
     n_states: 3
-    enabled: true
+    enabled: false
   window_size: 64                         # sequence length fed to models
   normalize: "zscore_rolling"             # zscore_rolling | minmax | none
   normalize_window: 500
